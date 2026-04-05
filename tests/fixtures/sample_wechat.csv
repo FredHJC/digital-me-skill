@@ -1,0 +1,6 @@
+StrTalker,StrContent,Type,CreateTime,IsSender
+wxid_test,你好我的手机号是13812345678,1,1696118400,1
+wxid_test,好的没问题,1,1696118460,0
+wxid_test,[图片],3,1696118520,0
+wxid_test,明天联系我邮箱test@example.com,1,1696118580,1
+wxid_test,晚安,1,1696118640,1

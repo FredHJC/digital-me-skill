@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "source_type": "email",
+  "context_label": "partner",
+  "twin_slug": "test-twin",
+  "imported_at": "2026-04-05T00:00:00+00:00",
+  "source_file": "emails.mbox",
+  "scrub_stats": {},
+  "chunk_count": 3,
+  "chunks": [
+    {
+      "id": 0,
+      "text": "Had a big fight with my girlfriend about her spending habits",
+      "metadata": {
+        "source": "email",
+        "timestamp": "2026-03-01T10:00:00+00:00"
+      }
+    },
+    {
+      "id": 1,
+      "text": "My dad just got diagnosed with diabetes, really worried",
+      "metadata": {
+        "source": "email",
+        "timestamp": "2026-03-02T14:00:00+00:00"
+      }
+    },
+    {
+      "id": 2,
+      "text": "She's great at negotiating deals, always starts with rapport building",
+      "metadata": {
+        "source": "email",
+        "timestamp": "2026-03-03T09:00:00+00:00"
+      }
+    }
+  ]
+}
