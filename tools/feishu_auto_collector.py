@@ -2,14 +2,14 @@
 """
 飞书自动采集器
 
-输入同事姓名，自动：
+输入用户姓名，自动：
   1. 搜索飞书用户，获取 user_id
-  2. 找到与他共同的群聊，拉取他的消息记录
+  2. 找到与其共同的群聊，拉取消息记录
   3. 拉取私聊消息（需要 user_access_token）
-  4. 搜索他创建/编辑的文档和 Wiki
+  4. 搜索其创建/编辑的文档和 Wiki
   5. 拉取文档内容
   6. 拉取多维表格（如有）
-  7. 输出统一格式，直接进 create-colleague 分析流程
+  7. 输出统一格式，直接进 digital-twin 提取流程
 
 前置：
   python3 feishu_auto_collector.py --setup   # 配置 App ID / Secret（一次性）
@@ -55,10 +55,11 @@ except ImportError:
     print("错误：请先安装 requests：pip3 install requests", file=sys.stderr)
     sys.exit(1)
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from tools.pii_scrubber import scrub
 from tools.ingestion_output import validate_context_label, write_ingestion_json, add_common_args
 
-CONFIG_PATH = Path.home() / ".digital-me" / "feishu_config.json"
+CONFIG_PATH = Path.home() / ".digital-twin" / "feishu_config.json"
 BASE_URL = "https://open.feishu.cn/open-apis"
 
 

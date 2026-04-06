@@ -9,7 +9,7 @@
         chunks=[{"id": 0, "text": "你好", "metadata": {}}],
         source_type="wechat_csv",
         context_label=label,
-        twin_slug="jiachen",
+        twin_slug="zhangsan",
         source_file="export.csv",
         scrub_stats={"[PHONE]": 1},
     )

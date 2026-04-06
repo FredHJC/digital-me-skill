@@ -1,7 +1,17 @@
 twins/
+data/
 __pycache__/
 *.pyc
 .pytest_cache/
 *.egg-info/
 dist/
 build/
+.DS_Store
+.planning/
+
+# Local Claude Code settings (user permissions)
+.claude/settings.local.json
+
+# Generated twin skills (contain user persona data)
+.claude/skills/*/
+!.claude/skills/digital-twin-*/

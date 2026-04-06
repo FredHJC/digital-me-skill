@@ -1,135 +1,70 @@
-# 基础信息录入脚本
+# 基础信息录入 / Intake
 
 ## 开场白
 
 ```
-我来帮你创建这位同事的 Skill。只需要回答 3 个问题，每个都可以跳过。
+我来帮你创建你的数字分身。只需要回答 2 个简单的问题。
+I'll help you create your digital twin. Just 2 quick questions.
 ```
 
 ---
 
 ## 问题序列
 
-### Q1：花名/代号
+### Q1：名字和标识 / Name and Slug
 
 ```
-这位同事怎么称呼？（花名、昵称或代号都行，多个字用 - 连接）
+你的数字分身叫什么名字？（会生成一个 slug 用于目录和命令）
+What should your digital twin be called? (A slug will be generated for directories and commands)
 
-例：qing-yun
+例 / Example：张三 → slug: zhang_san
 ```
 
-- 接受任意字符串
-- 生成的 slug 统一用 `-` 连接（不用下划线）
-- 中文自动转拼音再用 `-` 连接（"青云" → `qing-yun`，"小李" → `xiao-li`）
-- 英文直接小写 `-` 连接（"Big Mike" → `big-mike`）
+**规则 / Rules：**
+- 中文自动转拼音，用下划线连接（"张三" → `zhang_san`）
+- 英文直接小写加下划线（"Jia Chen" → `zhang_san`）
+- 也可直接输入 slug（"zhang_san" 原样保留）
+- Chinese auto-converts to pinyin with underscore connector
+- English lowercased with underscore separator
+- Direct slug input accepted as-is
 
 ---
 
-### Q2：基本信息
-
-把公司、职级、职位、性别放在一个问题里，让用户一句话说完：
+### Q2：关系场景预览 / Relationship Context Preview
 
 ```
-用一句话描述他的基本信息——公司、职级、职位、性别，想到什么写什么，跳过也行。
+你计划导入哪些关系场景的数据？（后续每次导入数据时会指定具体场景）
+What relationship contexts do you plan to import data for?
+(Each data import will specify a context — this is just a preview for directory setup)
 
-例：字节 2-1 后端工程师 男
+常用场景 / Common contexts：coworker（职场），partner（伴侣），family（家人），friend（朋友）
+自定义标签也支持 / Custom labels also supported（如 / e.g. mentor, teammate, classmate）
+
+请输入逗号分隔的列表 / Enter a comma-separated list:
+例 / Example：coworker, partner, family
 ```
 
-从用户的回答中解析以下字段（缺失的留空）：
-- **公司**
-- **职级**
-- **职位**
-- **性别**
-
-#### 职级对照参考表
-
-| 公司 | 职级格式 | 工程师/研究员 | 高级工程师 | 资深/专家 | Staff/Principal |
-|------|---------|------------|---------|---------|----------------|
-| 字节跳动 | X-Y | 2-1, 2-2 | 3-1, 3-2 | 3-3 | 3-3+（O级） |
-| 阿里巴巴 | P级 | P5, P6 | P7 | P8 | P9+ |
-| 腾讯 | T级 | T1-1~T2-2 | T3-1, T3-2 | T4 | T4+ |
-| 百度 | T级 | T5, T6 | T7 | T8 | T9+ |
-| 美团 | P级 | P4, P5 | P6 | P7 | P8+ |
-| 华为 | 数字级 | 13-15 | 16-17 | 18-19 | 20-21 |
-| 网易 | P级 | P1-P3 | P4 | P5 | P6+ |
-| 京东 | T级 | T3-T4 | T5 | T6 | T7+ |
-| 小米 | 数字级 | 1-3 | 4-5 | 6-7 | 8+ |
-
-**跨公司粗略对应**：
-
-```
-字节 2-1/2-2  ≈  阿里 P6   ≈  腾讯 T2  ≈  百度 T6
-字节 3-1      ≈  阿里 P7   ≈  腾讯 T3-1 ≈  百度 T7
-字节 3-2      ≈  阿里 P7+  ≈  腾讯 T3-2
-字节 3-3      ≈  阿里 P8   ≈  腾讯 T4
-```
-
-> 注：字节 2-1 是工程师职称，3-1 起为高级工程师；
-> 2-1 约等于阿里 P6，是独立完成任务的主力工程师级别。
+**规则 / Rules：**
+- 逗号分隔，每个标签创建 `knowledge/{label}/` 子目录
+- Comma-separated; each label creates a `knowledge/{label}/` subdirectory
+- 自定义标签支持 / Custom labels supported
+- 至少填写一个 / At least one required
 
 ---
 
-### Q3：性格画像
+## 确认汇总 / Confirmation Summary
 
-把 MBTI、星座、个性标签、企业文化标签、主观印象全部合在一起，让用户自由描述：
-
-```
-用一句话描述他的性格——MBTI、星座、个性特点、企业文化烙印、你对他的印象，
-想到什么写什么，跳过也行。
-
-例：INTJ 摩羯座 甩锅高手 字节范 CR很严格但从来不解释原因
-```
-
-从用户的回答中识别并提取以下字段（缺失的留空）：
-- **MBTI**：16 种标准类型
-- **星座**：12 星座
-- **个性标签**：从下方标签库匹配，也接受自定义描述
-- **企业文化标签**：从下方标签库匹配
-- **主观印象**：无法归类的自由描述，直接保留原文
-
-#### 个性标签库
-
-**工作态度**：认真负责 / 差不多就行 / 甩锅高手 / 背锅侠 / 完美主义 / 拖延症
-
-**沟通风格**：直接 / 绕弯子 / 话少 / 话多 / 爱发语音 / 只读不回 / 已读乱回 / 秒回强迫症
-
-**决策风格**：果断 / 反复横跳 / 依赖上级 / 强势推进 / 数据驱动 / 全凭感觉
-
-**情绪风格**：情绪稳定 / 玻璃心 / 容易激动 / 冷漠疏离 / 表面和气 / 阴阳怪气
-
-**话术与手段**：PUA 高手 / 职场政治玩家 / 甩锅艺术家 / 向上管理专家 / 爱讲大道理 / 情绪勒索
-
-#### 企业文化标签库
-
-- **字节范** — 坦诚直接、追求 impact、开口必讲 context、爱说"对齐"
-- **阿里味** — 六脉神剑、爱用"赋能""抓手""生态""闭环"
-- **腾讯味** — 数据说话、赛马机制、克制保守、注重用户体验
-- **华为味** — 奋斗者文化、流程规范、爱做 PPT 汇报、强调执行力
-- **百度味** — 技术至上、层级意识强、内部竞争激烈
-- **美团味** — 极致执行、抠细节、本地化思维
-- **第一性原理** — 马斯克式，追问本质、拒绝类比、激进简化
-- **OKR 狂热者** — 凡事先问 Objective、对 KR 斤斤计较
-- **大厂流水线** — 规范完善但创造力低、依赖 SOP、怕背锅
-- **创业公司派** — 资源有限、全栈思维、结果导向、容忍混乱
-
----
-
-## 确认汇总
-
-收集完毕后展示：
+收集完毕后展示 / After collecting, display:
 
 ```
-信息汇总：
+信息汇总 / Summary:
 
-  👤  {花名}
-  🏢  {公司} {职级} {职位}（若未填则省略）
-  ⚧   {性别}（若未填则省略）
-  🧠  {MBTI} {星座}（若未填则省略）
-  🏷️   个性：{标签列表}（若未填则省略）
-  🏢  企业文化：{标签列表}（若未填则省略）
-  💬  印象：{印象文本}（若未填则省略）
+  名字 / Name：{name}
+  标识 / Slug：{slug}
+  关系场景 / Contexts：{context_labels（逗号分隔）}
 
-确认无误？（确认 / 修改 [字段名]）
+确认无误？/ Confirm?（确认 / Yes — 修改 / Edit [field name]）
 ```
 
-用户确认后进入 Step 2 文件导入。
+用户确认后进入 Step 2 数据导入。
+After user confirmation, proceed to Step 2 data import.

@@ -3,7 +3,7 @@
 验证输出并写入 extractions/{context}.json。
 
 用法示例：
-    python3 tools/behavioral_extractor.py --slug jiachen --context coworker --base-dir ./twins
+    python3 tools/behavioral_extractor.py --slug zhangsan --context coworker --base-dir ./twins
 
     # 使用自定义模型：
     DIGITAL_ME_EXTRACT_MODEL=claude-opus-4-5 python3 tools/behavioral_extractor.py ...
@@ -291,8 +291,8 @@ def main() -> None:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 示例：
-  python3 tools/behavioral_extractor.py --slug jiachen --context coworker --base-dir ./twins
-  DIGITAL_ME_EXTRACT_MODEL=claude-opus-4-5 python3 tools/behavioral_extractor.py --slug jiachen --context partner
+  python3 tools/behavioral_extractor.py --slug zhangsan --context coworker --base-dir ./twins
+  DIGITAL_ME_EXTRACT_MODEL=claude-opus-4-5 python3 tools/behavioral_extractor.py --slug zhangsan --context partner
 """,
     )
     parser.add_argument(

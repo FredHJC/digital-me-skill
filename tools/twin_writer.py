@@ -6,8 +6,8 @@ Twin 目录管理器 — 创建和管理数字分身目录结构。
 并提供列出所有数字分身的功能。
 
 用法：
-    python3 twin_writer.py --action create --slug jiachen \
-        --name "张嘉晨" --context-labels coworker,partner,family,friend
+    python3 twin_writer.py --action create --slug zhangsan \
+        --name "张三" --context-labels coworker,partner,family,friend
 
     python3 twin_writer.py --action list --base-dir ./twins
 """
@@ -85,10 +85,17 @@ def create_twin(
     twin_dir.mkdir(parents=True, exist_ok=True)
     (twin_dir / "versions").mkdir(exist_ok=True)
     (twin_dir / "knowledge").mkdir(exist_ok=True)
+    (twin_dir / "extractions").mkdir(exist_ok=True)
+    (twin_dir / "facets").mkdir(exist_ok=True)
 
     # 为每个关系标签创建知识子目录
     for label in context_labels:
         (twin_dir / "knowledge" / label).mkdir(exist_ok=True)
+
+    # 创建空 feedback.log（避免 /digital-twin:review 时文件不存在）
+    feedback_path = twin_dir / "feedback.log"
+    if not feedback_path.exists():
+        feedback_path.touch()
 
     # 写入 meta.json
     now = datetime.now(timezone.utc).isoformat()

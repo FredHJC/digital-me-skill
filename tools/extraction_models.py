@@ -19,8 +19,9 @@ from pydantic import BaseModel, ValidationError, model_validator
 # ─────────────────────────────────────────────────────────────────────────────
 
 _RAW_TEXT_SIGNALS: list[re.Pattern] = [
-    # 长引号字符串（直引号或弯引号，超过 30 字符）
-    re.compile(r'[""\u201c\u201d][^""\u201c\u201d]{30,}[""\u201c\u201d]'),
+    # 长引号字符串（直引号或弯引号，超过 80 字符）
+    # 允许短句引用（口头禅、标志性表达 ≤80 字符），拦截长段原文
+    re.compile(r'[""\u201c\u201d][^""\u201c\u201d]{80,}[""\u201c\u201d]'),
     # 未脱敏的手机号（中国格式，数字边界）
     re.compile(r"(?<!\d)(?:\+?86[-\s]?)?1[3-9]\d{9}(?!\d)"),
     # 未脱敏的电子邮箱
@@ -72,7 +73,7 @@ def _collect_strings(obj: object) -> list[str]:
 # ─────────────────────────────────────────────────────────────────────────────
 
 class ToneStyle(BaseModel):
-    """语气风格维度 — 描述说话者的正式程度、幽默感、直接性等。"""
+    """语气风格维度 — 描述说话者的正式程度、幽默感、直接性、亲密度等。"""
 
     formality_level: int
     """正式程度，1-5 评分（1=非常随意，5=非常正式）。"""
@@ -88,6 +89,12 @@ class ToneStyle(BaseModel):
 
     cadence: str
     """表达节奏，如 "fast"、"slow"、"measured"。"""
+
+    warmth_level: str = "neutral"
+    """亲密程度，如 "distant"、"neutral"、"warm"、"affectionate"。"""
+
+    pet_names: list[str] = []
+    """昵称/爱称列表，如 ["宝", "老公"]。伴侣/家人场景常见。"""
 
 
 class VocabularyPatterns(BaseModel):
@@ -119,20 +126,23 @@ class KnowledgeBoundaries(BaseModel):
     """表明知识深度的行为信号列表，如 ["经常引用第一性原理"]。"""
 
 
-class BehavioralLimits(BaseModel):
-    """行为边界维度 — 描述硬边界、冲突风格和决策模式。"""
+class BehavioralPatterns(BaseModel):
+    """行为模式维度 — 根据关系场景自适应的行为描述。"""
 
-    hard_nos: list[str]
-    """绝对不会做的事情列表，如 ["never shares salary publicly"]。"""
+    hard_limits: list[str] = []
+    """行为底线。同事: 职业红线; 伴侣: 关系边界; 家人: 家庭动态底线。"""
 
     conflict_style: str
-    """冲突处理风格描述，如 "avoids direct confrontation"、"collaborative"。"""
+    """冲突/分歧处理方式。同事: 专业争论; 伴侣: 吵架和好模式; 家人: 家庭摩擦处理。"""
 
     decision_patterns: list[str]
-    """决策模式列表，如 ["uses data to justify decisions"]。"""
+    """决策模式。同事: 工作决策; 伴侣: 共同决定; 家人: 家庭事务决策。"""
 
-    boundary_markers: list[str]
-    """边界标记行为列表，如 ["deflects personal questions with humor"]。"""
+    emotional_patterns: list[str] = []
+    """情感表达模式。同事: 通常克制; 伴侣: 撒娇/表达爱意方式; 家人: 关心表达方式。"""
+
+    care_signals: list[str] = []
+    """关心信号。同事: 帮助同事的方式; 伴侣: 表达爱的细节; 家人: 孝心表达。"""
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -169,21 +179,20 @@ class ExtractionArtifact(BaseModel):
     knowledge_boundaries: KnowledgeBoundaries
     """知识边界维度提取结果。"""
 
-    behavioral_limits: BehavioralLimits
-    """行为边界维度提取结果。"""
+    behavioral_patterns: BehavioralPatterns
+    """行为模式维度提取结果（根据关系场景自适应）。"""
 
     @model_validator(mode="after")
     def validate_no_raw_quotes(self) -> "ExtractionArtifact":
-        """检查制品中是否包含疑似原始引用文本（超过 30 字符的引号字符串）。
+        """检查制品中是否包含疑似原始引用文本（超过 80 字符的引号字符串）。
 
-        这是一个数据质量守卫：提取制品应只包含行为模式描述，
-        而不应包含从原始数据直接引用的文本片段。
+        允许标志性短句和口头禅（≤80 字符），拦截整段对话原文。
 
         Raises:
-            ValueError: 若任何字符串字段包含超过 30 字符的引号字符串。
+            ValueError: 若任何字符串字段包含超过 80 字符的引号字符串。
         """
         long_quote_pattern = re.compile(
-            r'[""\u201c\u201d][^""\u201c\u201d]{30,}[""\u201c\u201d]'
+            r'[""\u201c\u201d][^""\u201c\u201d]{80,}[""\u201c\u201d]'
         )
         all_strings = _collect_strings(self)
         for s in all_strings:

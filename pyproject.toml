@@ -1,0 +1,22 @@
+[project]
+name = "digital-twin-skill"
+version = "1.1.0"
+description = "Create a high-fidelity AI twin of yourself from your own data"
+requires-python = ">=3.9"
+dependencies = [
+    "requests>=2.28.0",
+]
+
+[project.optional-dependencies]
+feishu = ["playwright>=1.40.0"]
+slack = ["slack-sdk>=3.27.0"]
+docx = ["python-docx>=1.1.0"]
+excel = ["openpyxl>=3.1.0"]
+pinyin = ["pypinyin>=0.48.0"]
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[tool.setuptools.packages.find]
+include = ["tools*"]

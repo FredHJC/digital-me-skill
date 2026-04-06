@@ -41,10 +41,11 @@ import subprocess
 from pathlib import Path
 from typing import Optional
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from tools.pii_scrubber import scrub
 from tools.ingestion_output import validate_context_label, write_ingestion_json, add_common_args
 
-CONFIG_PATH = Path.home() / ".digital-me" / "feishu_config.json"
+CONFIG_PATH = Path.home() / ".digital-twin" / "feishu_config.json"
 
 
 # ─── 配置管理 ────────────────────────────────────────────────────────────────

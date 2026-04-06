@@ -21,6 +21,7 @@ except ImportError:
     print("错误：请安装 pymupdf4llm：pip3 install pymupdf4llm", file=sys.stderr)
     sys.exit(1)
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from tools.pii_scrubber import scrub
 from tools.ingestion_output import validate_context_label, write_ingestion_json, add_common_args
 

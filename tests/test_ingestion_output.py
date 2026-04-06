@@ -61,7 +61,7 @@ class TestWriteIngestionJSON:
             chunks=chunks,
             source_type="wechat_csv",
             context_label="partner",
-            twin_slug="jiachen",
+            twin_slug="zhangsan",
             source_file="export.csv",
             scrub_stats={"[PHONE]": 2, "[EMAIL]": 1},
             base_dir=tmp_path / "twins",
@@ -70,7 +70,7 @@ class TestWriteIngestionJSON:
         assert doc["schema_version"] == "1.0"
         assert doc["source_type"] == "wechat_csv"
         assert doc["context_label"] == "partner"
-        assert doc["twin_slug"] == "jiachen"
+        assert doc["twin_slug"] == "zhangsan"
         assert doc["chunk_count"] == 1
         assert doc["scrub_stats"]["[PHONE]"] == 2
         assert len(doc["chunks"]) == 1

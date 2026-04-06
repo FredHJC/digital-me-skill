@@ -5,9 +5,9 @@ Twin 版本管理器
 负责数字分身文件的版本存档和回滚。
 
 用法：
-    python version_manager.py --action list --slug jiachen --base-dir ./twins
-    python version_manager.py --action backup --slug jiachen --version v1 --base-dir ./twins
-    python version_manager.py --action rollback --slug jiachen --version v1 --base-dir ./twins
+    python version_manager.py --action list --slug zhangsan --base-dir ./twins
+    python version_manager.py --action backup --slug zhangsan --version v1 --base-dir ./twins
+    python version_manager.py --action rollback --slug zhangsan --version v1 --base-dir ./twins
 """
 
 from __future__ import annotations
@@ -21,9 +21,8 @@ from datetime import datetime, timezone
 
 MAX_VERSIONS = 10  # 最多保留的版本数
 
-# Phase 1: only meta.json exists in twin root
-# Phase 3 will expand to ("meta.json", "core.md")
-TWIN_FILES: tuple[str, ...] = ("meta.json",)
+# Phase 3: meta.json + core.md
+TWIN_FILES: tuple[str, ...] = ("meta.json", "core.md")
 
 
 def list_versions(twin_dir: Path) -> list:
@@ -74,6 +73,13 @@ def backup(twin_dir: Path, version_name: str) -> bool:
     knowledge_src = twin_dir / "knowledge"
     if knowledge_src.exists():
         shutil.copytree(knowledge_src, target / "knowledge")
+    # Also backup facets/ directory
+    facets_src = twin_dir / "facets"
+    if facets_src.exists():
+        shutil.copytree(facets_src, target / "facets")
+    # Backup all SKILL*.md files (Phase 4 extension)
+    for skill_file in twin_dir.glob("SKILL*.md"):
+        shutil.copy2(skill_file, target / skill_file.name)
     print(f"已备份到：{target}")
     return True
 
@@ -95,6 +101,19 @@ def rollback(twin_dir: Path, target_version: str) -> bool:
         if knowledge_dest.exists():
             shutil.rmtree(knowledge_dest)
         shutil.copytree(knowledge_backup, knowledge_dest)
+    # Restore facets/ if backed up
+    facets_backup = version_dir / "facets"
+    if facets_backup.exists():
+        facets_dest = twin_dir / "facets"
+        if facets_dest.exists():
+            shutil.rmtree(facets_dest)
+        shutil.copytree(facets_backup, facets_dest)
+    # Remove current SKILL*.md before restoring backed-up versions
+    for stale_skill in twin_dir.glob("SKILL*.md"):
+        stale_skill.unlink()
+    # Restore backed-up SKILL*.md files
+    for skill_file in version_dir.glob("SKILL*.md"):
+        shutil.copy2(skill_file, twin_dir / skill_file.name)
     print(f"已回滚到版本：{target_version}")
     return True
 

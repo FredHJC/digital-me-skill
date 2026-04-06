@@ -50,11 +50,11 @@ def _make_valid_extraction_response() -> dict:
             "avoided_topics": ["personal finances", "family matters"],
             "depth_signals": ["frequently cites first principles"],
         },
-        "behavioral_limits": {
-            "hard_nos": ["never shares salary publicly"],
+        "behavioral_patterns": {
+            "hard_limits": ["never shares salary publicly"],
             "conflict_style": "avoids direct confrontation",
             "decision_patterns": ["uses data to justify decisions"],
-            "boundary_markers": ["deflects personal questions with humor"],
+            "care_signals": ["deflects personal questions with humor"],
         },
     }
 
@@ -115,24 +115,22 @@ class TestValidateNoRawText:
         assert violations == []
 
     def test_long_quoted_string_violation(self) -> None:
-        """超过 30 字符的引号字符串应被检测为违规。"""
-        # 引号内字符串长度 > 30
-        text = '"这是一段很长的引用文本，包含了超过三十个字符的内容，应当被检测为违规"'
+        """超过 80 字符的引号字符串应被检测为违规。"""
+        text = '"' + "长" * 85 + '"'
         violations = validate_no_raw_text(text)
         assert len(violations) > 0
         assert any("引号" in v or "原文" in v for v in violations)
 
     def test_long_english_quoted_string_violation(self) -> None:
-        """英文长引号字符串（>30 字符）也应被检测为违规。"""
-        text = '"This is a very long quoted string that exceeds thirty characters"'
+        """英文长引号字符串（>80 字符）也应被检测为违规。"""
+        text = '"This is a very very long quoted string that definitely exceeds eighty characters and should be flagged as a violation by the validator"'
         violations = validate_no_raw_text(text)
         assert len(violations) > 0
 
     def test_short_quote_not_flagged(self) -> None:
-        """短引号字符串（<30 字符）不应被标记为违规。"""
-        text = '"He said that yesterday"'
+        """短引号字符串和口头禅（≤80 字符）不应被标记为违规。"""
+        text = '"那就这样吧，别纠结了，我们直接开始做"'
         violations = validate_no_raw_text(text)
-        # 短引用不触发长引号规则（该字符串 < 30 字符）
         assert not any("引号" in v for v in violations)
 
     def test_unredacted_phone_violation(self) -> None:
@@ -179,9 +177,9 @@ class TestValidateNoRawText:
         assert violations == []
 
     def test_curly_quotes_long_string_violation(self) -> None:
-        """弯引号包裹的长字符串（> 30 字符）也应被检测。"""
+        """弯引号包裹的长字符串（> 80 字符）也应被检测。"""
         # 使用 Unicode 弯引号 \u201c 和 \u201d
-        text = "\u201cThis is a very long quoted string exceeding thirty characters\u201d"
+        text = "\u201c" + "x" * 85 + "\u201d"
         violations = validate_no_raw_text(text)
         assert len(violations) > 0
 
@@ -229,7 +227,7 @@ class TestIntegrationExtractAndValidate:
         assert artifact.tone_style is not None
         assert artifact.vocabulary is not None
         assert artifact.knowledge_boundaries is not None
-        assert artifact.behavioral_limits is not None
+        assert artifact.behavioral_patterns is not None
 
     def test_output_file_has_no_raw_text_violations(self, tmp_path: Path) -> None:
         """输出制品序列化后，逐字段检验无原始文本违规。"""

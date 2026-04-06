@@ -85,11 +85,11 @@ def _make_valid_extraction_response(context_label: str = "coworker") -> dict:
             "avoided_topics": ["personal finances"],
             "depth_signals": ["frequently cites first principles"],
         },
-        "behavioral_limits": {
-            "hard_nos": ["never shares salary publicly"],
+        "behavioral_patterns": {
+            "hard_limits": ["never shares salary publicly"],
             "conflict_style": "avoids direct confrontation",
             "decision_patterns": ["uses data to justify decisions"],
-            "boundary_markers": ["deflects personal questions with humor"],
+            "care_signals": ["deflects personal questions with humor"],
         },
     }
 
@@ -318,11 +318,11 @@ class TestValidationRejection:
                 "avoided_topics": [],
                 "depth_signals": [],
             },
-            "behavioral_limits": {
-                "hard_nos": [],
+            "behavioral_patterns": {
+                "hard_limits": [],
                 "conflict_style": "avoids",
                 "decision_patterns": [],
-                "boundary_markers": [],
+                "care_signals": [],
             },
         }
 

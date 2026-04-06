@@ -3,8 +3,8 @@
 对每个 chunk 调用 LLM 脱敏，自动修复含个人叙述的内容，并写入审计报告。
 
 用法：
-    python3 tools/privacy_auditor.py --slug jiachen
-    python3 tools/privacy_auditor.py --slug jiachen --base-dir ./twins
+    python3 tools/privacy_auditor.py --slug zhangsan
+    python3 tools/privacy_auditor.py --slug zhangsan --base-dir ./twins
 
 注意：
 - 报告 (privacy_audit_report.json) 仅包含 chunk_id 和抽象标签类型，
@@ -19,6 +19,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from tools.pii_scrubber import _llm_scrub
 
 
